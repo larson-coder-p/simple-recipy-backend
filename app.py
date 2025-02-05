@@ -1,21 +1,22 @@
 from flask import Flask
-from extensions import db, ma  # ✅ Import db & ma from extensions
+from extensions import db
 from routes import api_bp
 import os
 
 app = Flask(__name__)
 
-# ✅ Use PostgreSQL if deployed, else use SQLite locally
+# ✅ Use PostgreSQL if deployed, else SQLite locally
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "DATABASE_URL", "sqlite:///instance/recipe-database.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
-ma.init_app(app)  # ✅ Properly initialize Marshmallow
 
-# ✅ Register API routes
-app.register_blueprint(api_bp)
+# ✅ Register Blueprint only ONCE
+if not hasattr(app, "api_registered"):
+    app.register_blueprint(api_bp)
+    app.api_registered = True
 
 @app.route("/")
 def home():
