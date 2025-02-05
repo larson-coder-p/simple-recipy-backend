@@ -1,17 +1,19 @@
-from flask import Flask
+from flask import Flask, jsonify
+from flask_migrate import Migrate  # ✅ Import Flask-Migrate
 from extensions import db
 from routes import api_bp
 import os
 
 app = Flask(__name__)
 
-# ✅ Use PostgreSQL if deployed, else SQLite locally
+# ✅ Use PostgreSQL in production
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "DATABASE_URL", "sqlite:///instance/recipe-database.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
+migrate = Migrate(app, db)  # ✅ Initialize Flask-Migrate
 
 # ✅ Register Blueprint only ONCE
 if not hasattr(app, "api_registered"):
