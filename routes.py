@@ -11,6 +11,11 @@ def get_recipes():
     recipes = Recipe.query.all()
     return recipes_schema.jsonify(recipes), 200
 
+@api_bp.route("/api/recipes", methods=["GET"])
+def get_recipes():
+    recipes = Recipe.query.all()
+    return jsonify([recipe.to_dict() for recipe in recipes])
+
 # Get a single recipe by ID
 @api_bp.route('/recipes/<int:id>', methods=['GET'])
 def get_recipe(id):
